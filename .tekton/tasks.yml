@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cleanup
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: remove
+      image: alpine:3
+      env:
+        - name: WORKSPACE_SOURCE_PATH
+          value: $(workspaces.source.path)
+      workingDir: $(workspaces.source.path)
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+      script: |
+        #!/usr/bin/env sh
+        set -eu
+        echo "Eliminando todos los archivos de ${WORKSPACE_SOURCE_PATH} ..."
+        # Eliminar cualquier contenido existente del directorio si existe.
+        #
+        # No solo hacemos "rm -rf ${WORKSPACE_SOURCE_PATH}" porque ${WORKSPACE_SOURCE_PATH} podría ser "/"
+        # o la raíz de un volumen montado.
+        if [ -d "${WORKSPACE_SOURCE_PATH}" ] ; then
+          # Eliminar archivos y directorios no ocultos
+          rm -rf "${WORKSPACE_SOURCE_PATH:?}"/*
+          # Eliminar archivos y directorios que comienzan con . pero excluyendo ..
+          rm -rf "${WORKSPACE_SOURCE_PATH}"/.[!.]*
+          # Eliminar archivos y directorios que comienzan con .. más cualquier otro carácter
+          rm -rf "${WORKSPACE_SOURCE_PATH}"/..?*
+        fi
