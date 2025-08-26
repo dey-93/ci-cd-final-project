@@ -1,0 +1,10 @@
+name: Smoke
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ "main", "master" ]  # escuche ambas por si acaso
+jobs:
+  ok:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Actions funcionan ✅"
