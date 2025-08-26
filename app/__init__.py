@@ -1,5 +1,2 @@
-try:
-    from service import *  # reexporta si tienes paquete service
-except Exception:
-    def suma(a, b):  # fallback si no hay service
-        return a + b
+def suma(a, b):
+    return a + b
